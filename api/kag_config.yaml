@@ -3,14 +3,14 @@ openie_llm: &openie_llm
   type: maas
   base_url: https://dashscope.aliyuncs.com/compatible-mode/v1/
   api_key: sk-cc240630450945948937ef1be2332331
-  model: qwen3-coder-plus
+  model: qwen3-max
   enable_check: false
 
 chat_llm: &chat_llm
   type: maas
   base_url: https://dashscope.aliyuncs.com/compatible-mode/v1/
   api_key: sk-cc240630450945948937ef1be2332331
-  model: qwen3-coder-plus
+  model: qwen3-max
   enable_check: false
 
 vectorize_model: &vectorize_model
@@ -22,15 +22,23 @@ vectorize_model: &vectorize_model
   enable_check: false
 vectorizer: *vectorize_model
 
+
 log:
   level: INFO
-
 project:
   biz_scene: default
   host_addr: http://116.169.215.244:8887
-  id: '12'
+  id: '9'
   language: zh
-  namespace: Test
+  namespace: Test4
+
+# project:
+#   biz_scene: default
+#   host_addr: http://116.169.215.244:8887
+#   id: '3'
+#   language: zh
+#   namespace: BaiKe
+
 #------------project configuration end----------------#
 
 #------------kag-builder configuration start----------------#
@@ -38,29 +46,22 @@ kag_builder_pipeline:
   chain:
     type: unstructured_builder_chain # kag.builder.default_chain.DefaultUnstructuredBuilderChain
     extractor:
-      type: schema_free_extractor # kag.builder.component.extractor.schema_free_extractor.SchemaFreeExtractor
+      type: knowledge_unit_extractor # kag.builder.component.extractor.schema_free_extractor.SchemaFreeExtractor
       llm: *openie_llm
       ner_prompt:
-        type: hedongli_ner # kag.examples.Hedongli5.builder.prompt.ner.Hedongli5NERPrompt
-      std_prompt:
-        type: hedongli_std # kag.examples.Hedongli5.builder.prompt.std.Hedongli5StdPrompt
+        type: knowledge_unit_ner
       triple_prompt:
-        type: hedongli_triple # kag.examples.Hedongli5.builder.prompt.triple.Hedongli5TriplePrompt
+        type: knowledge_unit_triple
+      kn_prompt:
+        type: knowledge_unit
     reader:
-      type: docx_reader  # kag.builder.component.reader.dict_reader.DictReader
+      type: txt_reader # kag.builder.component.reader.txt_reader.TXTReader
     post_processor:
-      type: kag_post_processor 
-      llm: *openie_llm
-      enable_entity_classification: true
-      enable_document_classification: true
-      similarity_threshold: 0.9
-      enable_validation_mode: true
-      confidence_threshold: 0.7
-      batch_size: 5
+      type: kag_post_processor # kag.builder.component.postprocessor.kag_postprocessor.KAGPostProcessor
     splitter:
       type: length_splitter # kag.builder.component.splitter.length_splitter.LengthSplitter
-      split_length: 100000
-      window_length: 200
+      split_length: 300
+      window_length: 1
     vectorizer:
       type: batch_vectorizer # kag.builder.component.vectorizer.batch_vectorizer.BatchVectorizer
       vectorize_model: *vectorize_model
@@ -71,13 +72,10 @@ kag_builder_pipeline:
         username: "neo4j"
         password: "neo4j@openspg"
         database: "hedongli8"
-
-  num_threads_per_chain: 1
-  num_chains: 16
-
+  num_threads_per_chain: 2
+  num_chains: 20
   scanner:
-    type: file_scanner
-#    type: hotpotqa_dataset_scanner # kag.builder.component.scanner.dataset_scanner.HotpotqaCorpusScanner
+    type: dir_file_scanner # kag.builder.component.scanner.directory_scanner.DirectoryScanner
 #------------kag-builder configuration end----------------#
 
 #------------kag-solver configuration start----------------#
@@ -86,6 +84,7 @@ search_api: &search_api
 
 graph_api: &graph_api
   type: openspg_graph_api #kag.solver.tools.graph_api.impl.openspg_graph_api.OpenSPGGraphApi
+
 
 
 kg_cs: &kg_cs
@@ -171,25 +170,25 @@ py_code_based_math_executor: &py_code_based_math_executor_conf
   type: py_code_based_math_executor
   llm: *chat_llm
 
+
 kag_solver_pipeline:
   type: kag_static_pipeline
   planner:
-    type: lf_kag_static_planner
+    type: kag_static_planner
     llm: *chat_llm
     plan_prompt:
       type: default_lf_static_planning
     rewrite_prompt:
-      type: default_rewrite_sub_task_query
+      type: default_query_rewrite
   executors:
     - *kag_hybrid_executor_conf
     - *py_code_based_math_executor_conf
     - *kag_deduce_executor_conf
     - *kag_output_executor_conf
   generator:
-    type: default_generator # kag.solver.implementation.default_generator.DefaultGenerator
+    type: llm_index_generator
     llm_client: *chat_llm
     generated_prompt:
       type: default_refer_generator_prompt
     enable_ref: true
-
 #------------kag-solver configuration end----------------#

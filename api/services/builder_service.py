@@ -91,8 +91,7 @@ class KAGBuilderService:
                 original_config = copy.deepcopy(KAG_CONFIG.all_config) if KAG_CONFIG._is_initialized else None
                 init_env(config_file)
                 ckpt_dir = f"./data/{namespace}/builder/ckpt"
-                KAG_CONFIG.global_config.ckpt_dir = str(ckpt_dir)
-
+                KAG_CONFIG.global_config.ckpt_dir = ckpt_dir
                 try:
                     builder_config = copy.deepcopy(KAG_CONFIG.all_config["kag_builder_pipeline"])
                     runner = BuilderChainRunner.from_config(
