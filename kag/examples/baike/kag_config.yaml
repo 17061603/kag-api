@@ -1,22 +1,22 @@
 #------------project configuration start----------------#
 openie_llm: &openie_llm
   type: maas
-  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-  api_key: key
-  model: qwen2.5-7b-instruct-1m
+  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1/
+  api_key: sk-cc240630450945948937ef1be2332331
+  model: qwen3-coder-plus
   enable_check: false
 
 chat_llm: &chat_llm
   type: maas
-  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1
-  api_key: key
-  model: qwen2.5-72b-instruct
+  base_url: https://dashscope.aliyuncs.com/compatible-mode/v1/
+  api_key: sk-cc240630450945948937ef1be2332331
+  model: qwen3-coder-plus
   enable_check: false
 
 vectorize_model: &vectorize_model
-  api_key: key
-  base_url: https://api.siliconflow.cn/v1
-  model: BAAI/bge-m3
+  api_key: Bearer 357ad86a-a5b1-47af-b463-f259c14ddbd4
+  base_url: http://jifang.wsb360.com:8005/v1/
+  model: blz
   type: openai
   vector_dimensions: 1024
   enable_check: false
@@ -27,8 +27,8 @@ log:
   level: INFO
 project:
   biz_scene: default
-  host_addr: http://127.0.0.1:8887
-  id: '7'
+  host_addr: http://116.169.215.244:8887
+  id: '3'
   language: zh
   namespace: BaiKe
 
