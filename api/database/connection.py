@@ -1,10 +1,6 @@
-"""
-数据库连接和会话管理
-"""
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import declarative_base
-
-from .config import settings
+from database.config import settings
 
 
 engine = create_async_engine(

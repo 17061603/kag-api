@@ -1,6 +1,3 @@
-"""
-Schema相关路由
-"""
 import logging
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession

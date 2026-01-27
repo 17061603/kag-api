@@ -4,7 +4,6 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, BigInteger
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
-from datetime import datetime
 
 from .connection import Base
 

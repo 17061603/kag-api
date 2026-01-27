@@ -1,8 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-
-from routers import project_router, file_router, schema_router
+from routers import project_router, file_router, schema_router, builder_router
 from database.connection import init_db, close_db
 
 
@@ -23,7 +22,7 @@ app = FastAPI(
 app.include_router(project_router)
 app.include_router(file_router)
 app.include_router(schema_router)
-
+app.include_router(builder_router)
 
 
 if __name__ == "__main__":
