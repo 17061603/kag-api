@@ -5,7 +5,7 @@ from models.builder_schemas import (
     TaskStatusResponse
 )
 from services.builder_service import builder_service
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -18,20 +18,29 @@ router = APIRouter(prefix="/build", tags=["知识库构建"])
 @router.post("/{project_id}", response_model=BuildResponse, summary="构建知识库")
 async def build_kb(
     project_id: int,
+    background_tasks: BackgroundTasks,
     session: AsyncSession = Depends(get_session),
 ):
     """
-    构建知识库接口
+    构建知识库接口（后台任务执行）
     返回:
-    - task_id: 任务ID
-    - status: 任务状态
+    - task_id: 任务ID，用于 GET /build/status/{task_id} 查询进度
+    - status: 任务状态（started）
     - message: 消息
     """
     try:
-        task_id = await builder_service.build_knowledge_base(
+        # 准备配置并获取 task_id，不执行构建
+        task_id = await builder_service.start_build(
             session=session,
             project_id=project_id
         )
+        
+        # 将构建任务添加到后台执行
+        background_tasks.add_task(
+            builder_service.run_build_task,
+            task_id
+        )
+        
         return BuildResponse(
             task_id=task_id,
             status="started",
