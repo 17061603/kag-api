@@ -156,7 +156,8 @@ kag_hybrid_executor: &kag_hybrid_executor_conf
     - *rc
   merger:
     type: kag_merger
-  enable_summary: true
+  enable_summary: false      # 关闭 summary，用不到 LLM
+  # with_llm_select: false     # 关闭 LLM 选段（context_select），只按得分截前 N
 
 kag_output_executor: &kag_output_executor_conf
   type: kag_output_executor
