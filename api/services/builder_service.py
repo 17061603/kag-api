@@ -38,20 +38,16 @@ class KAGBuilderService:
         """
         if not isinstance(config, dict):
             return
-        
-        # 在顶层注入
+
         config[KAGConstants.KAG_QA_TASK_CONFIG_KEY] = task_id
         
-        # 递归处理所有嵌套字典
         for key, value in config.items():
             if isinstance(value, dict):
-                # 如果嵌套字典有 "type" 键（表示是一个组件配置），也注入 task_id
                 if "type" in value:
                     value[KAGConstants.KAG_QA_TASK_CONFIG_KEY] = task_id
-                # 继续递归
+
                 self._inject_task_id(value, task_id)
             elif isinstance(value, list):
-                # 处理列表中的字典（如多个 extractor）
                 for item in value:
                     if isinstance(item, dict):
                         self._inject_task_id(item, task_id)

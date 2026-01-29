@@ -1,7 +1,14 @@
 import uvicorn
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from routers import project_router, file_router, schema_router, builder_router, retriever_router
+from routers import (
+    project_router,
+    file_router,
+    schema_router,
+    builder_router,
+    retriever_router,
+    qa_router,
+)
 from database.connection import init_db, close_db
 
 
@@ -24,6 +31,8 @@ app.include_router(file_router)
 app.include_router(schema_router)
 app.include_router(builder_router)
 app.include_router(retriever_router)
+app.include_router(qa_router)
+
 
 
 if __name__ == "__main__":
