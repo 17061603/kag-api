@@ -51,7 +51,7 @@ async def upload_file(
         raise HTTPException(status_code=500, detail=f"上传文件失败: {str(e)}")
 
 
-@router.delete("/{file_id}", response_model=FileDeleteResponse, summary="删除文件")
+@router.post("/{file_id}", response_model=FileDeleteResponse, summary="删除文件")
 async def delete_file(
     project_id: int,
     file_id: int,

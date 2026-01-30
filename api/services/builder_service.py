@@ -58,8 +58,7 @@ class KAGBuilderService:
         project_id: int
     ) -> str:
         """
-        启动构建任务（准备配置，返回 task_id，不执行构建）
-        实际构建在后台任务中执行
+        启动构建任务
         """
         import_modules_from_path(".")
 
@@ -70,18 +69,15 @@ class KAGBuilderService:
         task_id = f"{namespace}_{int(time.time() * 1000000)}"
         
         try:
-            # 3. 初始化任务状态
             task_status[task_id] = {
                 "status": "pending",
                 "message": "任务已创建，等待执行",
                 "progress": 0
             }
-
-            # 4. 加载配置文件
             config = self._load_config(config_file)
             host_addr = config.get('project', {}).get('host_addr')
             
-            # 5. 创建任务级 config
+            #  创建任务级 config
             task_cfg = KAGConfigMgr()
             task_cfg.update_conf(config)
             

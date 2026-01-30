@@ -29,7 +29,6 @@ async def build_kb(
     - message: 消息
     """
     try:
-        # 准备配置并获取 task_id，不执行构建
         task_id = await builder_service.start_build(
             session=session,
             project_id=project_id
