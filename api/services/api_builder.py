@@ -1,27 +1,21 @@
-import os  
 import asyncio  
 import logging  
 from typing import Optional, Dict, Any  
-from pathlib import Path  
-from fastapi import FastAPI, HTTPException, BackgroundTasks  
+from fastapi import FastAPI, HTTPException  
 from pydantic import BaseModel  
 import yaml  
 import copy  
 import threading
 
 from kag.common.registry import import_modules_from_path  
-from kag.common.conf import KAG_CONFIG, KAGConfigMgr, KAGConstants, KAGConfigAccessor, init_env  
+from kag.common.conf import KAG_CONFIG, KAGConfigMgr, KAGConstants,init_env  
 from kag.builder.runner import BuilderChainRunner
-from knext.project.client import ProjectClient  
-
-# 初始化FastAPI应用  
+  
 app = FastAPI(title="KAG Knowledge Base Builder API", version="1.0.0")  
-
-# 设置日志  
+  
 logging.basicConfig(level=logging.INFO)  
 logger = logging.getLogger(__name__)  
-
-# 请求模型  
+ 
 class BuildRequest(BaseModel):  
     file_path: str  
     namespace: str  
@@ -34,7 +28,6 @@ class BuildResponse(BaseModel):
     status: str  
     message: str  
 
-# 全局任务状态管理  
 task_status: Dict[str, Dict[str, Any]] = {}  
 
 class KAGBuilderService:  
@@ -60,8 +53,7 @@ class KAGBuilderService:
             # 创建独立的配置管理器  
             kb_conf = KAGConfigMgr()  
             kb_conf.update_conf(config)  
-            
-            # 初始化全局配置，确保使用本地配置  
+
             global_config = config.get(KAGConstants.PROJECT_CONFIG_KEY, {})  
             global_config['namespace'] = namespace  
             if host_addr:  

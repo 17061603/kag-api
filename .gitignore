@@ -20,3 +20,6 @@ __pycache__/
 
 api/data
 *.db
+
+*.img
+*.tar.gz

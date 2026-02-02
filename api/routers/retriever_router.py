@@ -35,7 +35,7 @@ async def retrieve(
         )
         return RetrieveResponse(**data)
     except HTTPException:
-        # 已包装过的异常直接抛出
+    
         raise
     except Exception as e:
         logger.exception(f"知识库检索时发生错误: {e}")

@@ -1,0 +1,13 @@
+services:
+  kag_api:  
+    image: kag_api:20260131
+    container_name: kag_api  
+    ports:
+      - 9387:9387
+    environment:
+      - TZ=Asia/Shanghai
+      - PGUSER=postgres
+      - POSTGRES_PASSWORD=difyai123456
+      - POSTGRES_DB=kag_api
+      - DB_HOST=host.docker.internal
+      - DB_PORT=5432
