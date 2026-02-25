@@ -8,8 +8,8 @@ class DatabaseSettings(BaseSettings):
     PGUSER:str = os.environ.get("PGUSER", "postgres")
     POSTGRES_PASSWORD:str = os.environ.get("POSTGRES_PASSWORD", "difyai123456")
     POSTGRES_DB:str = os.environ.get("POSTGRES_DB", "kag_api")
-    DB_HOST:str = os.environ.get("DB_HOST", "localhost")
-    DB_PORT:str = os.environ.get("DB_PORT", "5432")
+    DB_HOST:str = os.environ.get("DB_HOST", "langchain.wsb360.com")
+    DB_PORT:str = os.environ.get("DB_PORT", "11132")
 
     DATABASE_URL: str = f"postgresql+asyncpg://{PGUSER}:{POSTGRES_PASSWORD}@{DB_HOST}:{DB_PORT}/{POSTGRES_DB}"
     

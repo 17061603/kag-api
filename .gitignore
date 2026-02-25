@@ -19,6 +19,7 @@ __pycache__/
 
 
 api/data
+api/ckpt
 *.db
 
 *.img

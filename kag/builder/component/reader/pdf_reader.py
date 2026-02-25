@@ -462,65 +462,66 @@ class PDFReader(ReaderABC):
 
         self.fd = None
         try:
-            self.fd = open(input, "rb")
-            self.pdf_reader = PyPDF2.PdfReader(self.fd)
-            self.level_outlines = self._get_full_outlines()
-            self.parser = PDFParser(self.fd)
-            self.document = PDFDocument(self.parser)
-            chunks = []
-            basename, _ = os.path.splitext(os.path.basename(input))
+            with open(input, "rb") as fd:
+                self.fd = fd  # 供 PDFParser 使用，避免传 None 及后续 “closed file” 错误
+                self.pdf_reader = PyPDF2.PdfReader(fd)
+                self.level_outlines = self._get_full_outlines()
+                self.parser = PDFParser(self.fd)
+                self.document = PDFDocument(self.parser)
+                chunks = []
+                basename, _ = os.path.splitext(os.path.basename(input))
 
-            # get outline
-            try:
-                outlines = self.document.get_outlines()  # noqa
-            except Exception as e:
-                logger.warning(f"loading PDF file: {e}")
-                self.outline_flag = False
+                # get outline
+                try:
+                    outlines = self.document.get_outlines()  # noqa
+                except Exception as e:
+                    logger.warning(f"loading PDF file: {e}")
+                    self.outline_flag = False
 
-            if not self.outline_flag:
-                with open(input, "rb") as file:
-                    for idx, page_layout in enumerate(extract_pages(file)):
-                        content = ""
-                        for element in page_layout:
-                            if hasattr(element, "get_text"):
-                                content = content + element.get_text()
-                        chunk = Chunk(
-                            id=generate_hash_id(f"{basename}#{idx}"),
-                            name=f"{basename}#{idx}",
-                            content=content,
-                        )
-                        chunks.append(chunk)
+                if not self.outline_flag:
+                    with open(input, "rb") as file:
+                        for idx, page_layout in enumerate(extract_pages(file)):
+                            content = ""
+                            for element in page_layout:
+                                if hasattr(element, "get_text"):
+                                    content = content + element.get_text()
+                            chunk = Chunk(
+                                id=generate_hash_id(f"{basename}#{idx}"),
+                                name=f"{basename}#{idx}",
+                                content=content,
+                            )
+                            chunks.append(chunk)
 
-            else:
-                split_words = []  # noqa
+                else:
+                    split_words = []  # noqa
 
-                page_contents = []
+                    page_contents = []
 
-                with open(input, "rb") as file:
-                    for idx, page_layout in enumerate(extract_pages(file)):
-                        content = ""
-                        for element in page_layout:
-                            if hasattr(element, "get_text"):
-                                content = content + element.get_text()
-                        content = content.replace("\n", "")
-                        page_contents.append(content)
+                    with open(input, "rb") as file:
+                        for idx, page_layout in enumerate(extract_pages(file)):
+                            content = ""
+                            for element in page_layout:
+                                if hasattr(element, "get_text"):
+                                    content = content + element.get_text()
+                            content = content.replace("\n", "")
+                            page_contents.append(content)
 
-                # 使用正则表达式移除所有空白字符（包括空格、制表符、换行符等）
-                page_contents = [
-                    re.sub(r"\s+", "", content) for content in page_contents
-                ]
-                page_contents = [
-                    re.sub(r"[\s\u200b\u200c\u200d\ufeff]+", "", content)
-                    for content in page_contents
-                ]
-                page_contents = ["".join(content.split()) for content in page_contents]
+                    # 使用正则表达式移除所有空白字符（包括空格、制表符、换行符等）
+                    page_contents = [
+                        re.sub(r"\s+", "", content) for content in page_contents
+                    ]
+                    page_contents = [
+                        re.sub(r"[\s\u200b\u200c\u200d\ufeff]+", "", content)
+                        for content in page_contents
+                    ]
+                    page_contents = ["".join(content.split()) for content in page_contents]
 
-                final_content = self.extract_content_from_outline(
-                    page_contents, self.level_outlines
-                )
-                chunks, subgraph = self.convert_finel_content_to_chunks(final_content)
+                    final_content = self.extract_content_from_outline(
+                        page_contents, self.level_outlines
+                    )
+                    chunks, subgraph = self.convert_finel_content_to_chunks(final_content)
 
-            return chunks
+                return chunks
 
         except Exception as e:
             raise RuntimeError(f"Error loading PDF file: {e}")

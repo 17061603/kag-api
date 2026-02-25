@@ -28,9 +28,9 @@ log:
 project:
   biz_scene: default
   host_addr: http://116.169.215.244:8887
-  id: '9'
+  id: '18'
   language: zh
-  namespace: Test4
+  namespace: SXgw
 
 # project:
 #   biz_scene: default
@@ -55,7 +55,12 @@ kag_builder_pipeline:
       kn_prompt:
         type: knowledge_unit
     reader:
-      type: txt_reader # kag.builder.component.reader.txt_reader.TXTReader
+      type: mix_reader   
+      txt_reader: { type: txt_reader }
+      pdf_reader: { type: pdf_reader }
+      docx_reader: { type: docx_reader }
+      md_reader: { type: md_reader }
+      dict_reader: { type: dict_reader }  
     post_processor:
       type: kag_post_processor # kag.builder.component.postprocessor.kag_postprocessor.KAGPostProcessor
     splitter:
@@ -68,14 +73,15 @@ kag_builder_pipeline:
     writer:
       type: kg_writer # kag.builder.component.writer.kg_writer.KGWriter
       neo4j:
-        uri: "neo4j://116.169.215.244:7687"
-        username: "neo4j"
-        password: "neo4j@openspg"
-        database: "hedongli8"
+        uri: neo4j://116.169.215.244:7687
+        username: neo4j
+        password: neo4j@openspg
+        database: hedongli8
   num_threads_per_chain: 2
   num_chains: 20
   scanner:
     type: dir_file_scanner # kag.builder.component.scanner.directory_scanner.DirectoryScanner
+    file_pattern: ".*\\.(docx|pdf|txt|md)$"
 #------------kag-builder configuration end----------------#
 
 #------------kag-solver configuration start----------------#
